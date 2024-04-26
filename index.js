@@ -9,13 +9,13 @@ const router = jsonServer.router(data)
 const middlewares = jsonServer.defaults()
 
 
-server.post('/api/posts', (req, res) => {
-    const newPost = { id: data.posts.length + 1, ...req.body }
-    data.posts.push(newPost)
+server.post('/api/comments', (req, res) => {
+    const newPost = { id: data.comments.id, ...req.body }
+    data.comments.push(newPost)
 })
 
-server.get('/api/posts', (req, res) => {
-    res.json(data.posts)
+server.get('/api/comments', (req, res) => {
+    res.json(data.comments)
 })
 
 server.use(middlewares)
