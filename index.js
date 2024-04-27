@@ -1,28 +1,41 @@
-const express = require('express')
-const app = express()
-const jsonServer = require('json-server')
-const data = require('./db.json')
+const express = require('express');
+const app = express();
+const fs = require('fs');
 
-const server = jsonServer.create()
-const router = jsonServer.router(data)
+// Read data from JSON db.json
+const data = JSON.parse(fs.readFileSync('db.json', 'utf8'));
 
-const middlewares = jsonServer.defaults()
+// serve the json data at /api/comments
+app.get('/api/comments', (req, res) => {
+    res.json(data.comments);
+});
 
+// add route to handle POST requests
+app.post('/api/comments', (req, res) => {
+    const newPost = req.body;
+    data.comments.push(newPost);
+    fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
+    res.json(newPost);
+});
 
-server.post('/api/comments', (req, res) => {
-    const newPost = { id: data.comments.id, ...req.body }
-    data.comments.push(newPost)
-})
+app.get('/api/comments/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const comment = data.comments.find(comment => comment.id === id)
+    if (comment) {
+        res.json(comment)
+    } else {
+        res.status(404).json({ error: 'Comment not found' });
+    }
+});
 
-server.get('/api/comments', (req, res) => {
-    res.json(data.comments)
-})
+app.delete('/api/comments/:id', (req, res) => {
+    const id = Number(req.params.id)
+    data.comments = data.comments.filter(comment => comment.id !== id)
+    res.status(204).end()
+});
 
-server.use(middlewares)
-server.use(router)
+const PORT = process.env.PORT || 3001;
 
-const PORT = process.env.PORT || 3001
-
-server.listen(PORT, () => {
-    console.log('JSON Server is running on port', PORT)
-})
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
