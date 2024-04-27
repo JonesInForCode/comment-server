@@ -8,6 +8,20 @@ const data = JSON.parse(fs.readFileSync('db.json', 'utf8'));
 
 app.use(cors())
 
+const requestLogger = (req, res, next) => {
+    console.log('Method: ', req.method)
+    console.log('Path: ', req.path)
+    console.log('Body: ', req.body)
+    console.log('---')
+    next()
+}
+
+const unknownEndpoint = (req, res) => {
+    res.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(requestLogger)
+
 // serve the json data at /api/comments
 app.get('/api/comments', (req, res) => {
     res.json(data.comments);
@@ -36,6 +50,8 @@ app.delete('/api/comments/:id', (req, res) => {
     data.comments = data.comments.filter(comment => comment.id !== id)
     res.status(204).end()
 });
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001;
 
