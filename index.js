@@ -1,9 +1,12 @@
 const express = require('express');
+const cors = require('cors')
 const app = express();
 const fs = require('fs');
 
 // Read data from JSON db.json
 const data = JSON.parse(fs.readFileSync('db.json', 'utf8'));
+
+app.use(cors())
 
 // serve the json data at /api/comments
 app.get('/api/comments', (req, res) => {
