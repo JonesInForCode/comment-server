@@ -65,7 +65,7 @@ app.put('/api/comments/:id', (req, res) => {
         ...comment,
         ...updatedComment,
         user: comment.user
-    };
+    }
 
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
     res.json(data.comments[commentIndex]);
@@ -73,8 +73,23 @@ app.put('/api/comments/:id', (req, res) => {
 
 app.delete('/api/comments/:id', (req, res) => {
     const id = Number(req.params.id)
-    data.comments = data.comments.filter(comment => comment.id !== id)
-    res.status(204).end()
+    const commentIndex = data.comments.findIndex(comment => comment.id === id);
+
+    if (commentIndex === -1) {
+        return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    const comment = data.comments[commentIndex];
+
+    // check is the current user matches the username of the comment being deleted
+    if (comment.user.username !== data.currentUser.username) {
+        return res.status(403).json({ error: 'You are not authorized to delete this comment'});
+    }
+
+    // Remove the comment from the array
+    data.comments.splice(commentIndex, 1);
+    fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
+    res.status(204).end();
 });
 
 app.use(unknownEndpoint)
