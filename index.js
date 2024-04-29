@@ -21,6 +21,7 @@ const unknownEndpoint = (req, res) => {
 }
 
 app.use(requestLogger)
+app.use(express.json())
 
 // serve the json data at /api/comments
 app.get('/api/comments', (req, res) => {
