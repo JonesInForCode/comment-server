@@ -35,10 +35,37 @@ app.get('/api/comments', (req, res) => {
 // add route to handle POST requests
 app.post('/api/comments', (req, res) => {
     const newPost = req.body;
-    data.comments.push(newPost);
+    if (newPost.parentId) {
+        const parentComment = findCommentById(data.comments, newPost.parentId);
+        if (!parentComment) {
+            return res.status(404).json({ error: 'Parent comment not found' });
+         }
+         if (!parentComment.replies) {
+             parentComment.replies = [];
+         }
+         parentComment.replies.push(newPost);
+    } else {
+        data.comments.push(newPost);
+     }
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
     res.json(newPost);
 });
+
+// Helper function to recursevely find a comment by its id
+function findCommentById(comments, id) {
+    for (const comment of comments) {
+        if (comment.id === id) {
+            return comment;
+        }
+        if (comment.replies) {
+            const foundComment = findCommentById(comment.replies, id);
+            if (foundComment) {
+                return foundComment;
+            }
+        }
+     }
+     return null;
+ }
 
 app.get('/api/comments/:id', (req, res) => {
     const id = Number(req.params.id)
