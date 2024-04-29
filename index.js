@@ -24,7 +24,11 @@ app.use(requestLogger)
 
 // serve the json data at /api/comments
 app.get('/api/comments', (req, res) => {
-    res.json(data.comments);
+    const responseData = {
+        comments: data.comments,
+        currentUser: data.currentUser
+    };
+    res.json(responseData);
 });
 
 // add route to handle POST requests
