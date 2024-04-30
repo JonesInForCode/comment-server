@@ -100,21 +100,24 @@ app.put('/api/comments/:id', (req, res) => {
 
 app.delete('/api/comments/:id', (req, res) => {
     const id = req.params.id;
-    const commentIndex = data.comments.findIndex(comment => comment.id === id);
 
-    if (commentIndex === -1) {
+    //find the comment with the given id using the recursive helper function
+    const comment = findCommentById(data.comments, id);
+
+    if (!comment) {
         return res.status(404).json({ error: 'Comment not found' });
     }
 
-    const comment = data.comments[commentIndex];
-
-    // check is the current user matches the username of the comment being deleted
-    if (comment.user.username !== data.currentUser.username) {
+    // check if the current user is the author of the comment
+    if (comment.user.username!== data.currentUser.username) {
         return res.status(403).json({ error: 'You are not authorized to delete this comment'});
     }
 
-    // Remove the comment from the array
+    // remove the comment from the array
+    const commentIndex = data.comments.findIndex(comment => comment.id === id);
     data.comments.splice(commentIndex, 1);
+
+    // save the updated data to the JSON file
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
     res.status(204).end();
 });
