@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors')
 const app = express();
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 // Read data from JSON db.json
 const data = JSON.parse(fs.readFileSync('db.json', 'utf8'));
@@ -35,6 +36,7 @@ app.get('/api/comments', (req, res) => {
 // add route to handle POST requests
 app.post('/api/comments', (req, res) => {
     const newPost = req.body;
+    newPost.id = uuidv4();
     if (newPost.parentId) {
         const parentComment = findCommentById(data.comments, newPost.parentId);
         if (!parentComment) {
@@ -45,7 +47,6 @@ app.post('/api/comments', (req, res) => {
          }
          parentComment.replies.push(newPost);
     } else {
-        newPost.id = data.comments.length + 1;
         data.comments.push(newPost);
      }
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
