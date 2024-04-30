@@ -45,6 +45,7 @@ app.post('/api/comments', (req, res) => {
          }
          parentComment.replies.push(newPost);
     } else {
+        newPost.id = data.comments.length + 1;
         data.comments.push(newPost);
      }
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
