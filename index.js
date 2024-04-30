@@ -80,27 +80,20 @@ app.get('/api/comments/:id', (req, res) => {
 app.put('/api/comments/:id', (req, res) => {
     const id = Number(req.params.id);
     const updatedComment = req.body;
-    const commentIndex = data.comments.findIndex(comment => comment.id === id);
 
-    if (commentIndex === -1) {
-        return res.status(404).json({ error: 'comment not found' });
+    // find the comment with the given id
+    const comment = findCommentById(data.comments, id);
+
+    if (!comment) {
+        return res.status(404).json({ error: 'Comment not found' });
     }
 
-    // Check if the current user matches the username of the comment being updated
-    const comment = data.comments[commentIndex];
-    if (comment.user.username !== data.currentUser.username) {
-        return res.status(403).json({ error: `User is not authorized to edit this comment, or is not the owner` })
-    }
+    // update the comment with the new data
+    Object.assign(comment, updatedComment);
 
-    //update the comment
-    data.comments[commentIndex] = {
-        ...comment,
-        ...updatedComment,
-        user: comment.user
-    }
-
+    // Save the updated data to the JSON file
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
-    res.json(data.comments[commentIndex]);
+    res.json(comment);
 });
 
 app.delete('/api/comments/:id', (req, res) => {
