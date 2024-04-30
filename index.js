@@ -70,7 +70,7 @@ function findCommentById(comments, id) {
  }
 
 app.get('/api/comments/:id', (req, res) => {
-    const id = Number(req.params.id)
+    const id = req.params.id;
     const comment = data.comments.find(comment => comment.id === id)
     if (comment) {
         res.json(comment)
@@ -80,7 +80,7 @@ app.get('/api/comments/:id', (req, res) => {
 });
 
 app.put('/api/comments/:id', (req, res) => {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     const updatedComment = req.body;
 
     // find the comment with the given id
@@ -99,7 +99,7 @@ app.put('/api/comments/:id', (req, res) => {
 });
 
 app.delete('/api/comments/:id', (req, res) => {
-    const id = Number(req.params.id)
+    const id = req.params.id;
     const commentIndex = data.comments.findIndex(comment => comment.id === id);
 
     if (commentIndex === -1) {
