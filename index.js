@@ -60,7 +60,7 @@ function findCommentById(comments, id) {
             return comment;
         }
         if (comment.replies) {
-            const foundComment = findCommentById(comment.replies, id);
+            const foundComment = findCommentById(comment.replies, id, comment);
             if (foundComment) {
                 return foundComment;
             }
@@ -100,30 +100,35 @@ app.put('/api/comments/:id', (req, res) => {
 
 app.delete('/api/comments/:id', (req, res) => {
     const id = req.params.id;
-    console.log(req.params.id);
 
-    //find the comment with the given id using the recursive helper function
-    const comment = findCommentById(data.comments, id);
-    console.log(comment);
+    let isDeleted = false;
 
-    if (!comment) {
+    // function to recursively find and delete a comment or reply
+    function deleteCommentOrReply(comments, id) {
+        for (let i = 0; i < comments.length; i++) {
+            if (comments[i].id === id) {
+                // if the comment is a top-level comment, delete it
+                comments.splice(i, 1);
+                return true;
+            } else if (comments[i].replies) {
+                // if the comment has replies, search for the comment in its replies
+                const foundInReplies = deleteCommentOrReply(comments[i].replies, id);
+                if (foundInReplies) {
+                    return true;
+                }
+        }
+    }
+    return false;
+    }
+
+    // Attempt to delete the comment or reply
+    isDeleted = deleteCommentOrReply(data.comments, id);
+
+    if (!isDeleted) {
         return res.status(404).json({ error: 'Comment not found' });
     }
 
-    // check if the current user is the author of the comment
-    if (comment.user.username!== data.currentUser.username) {
-        return res.status(403).json({ error: 'You are not authorized to delete this comment'});
-    }
-
-    // remove the comment from the array
-    const commentIndex = data.comments.findIndex(comment => comment.id === id);
-    console.log(commentIndex);
-    data.comments.splice(commentIndex, 1);
-    console.log(data.comments);
-
-
-    // save the updated data to the JSON file
-    console.log(data);
+    // Save the updated data to the JSON file
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
     res.status(204).end();
 });
