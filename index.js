@@ -37,6 +37,7 @@ app.get('/api/comments', (req, res) => {
 app.post('/api/comments', (req, res) => {
     const newPost = req.body;
     newPost.id = uuidv4();
+    newPost.createdAt = new Date().toISOString();
     if (newPost.parentId) {
         const parentComment = findCommentById(data.comments, newPost.parentId);
         if (!parentComment) {
