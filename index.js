@@ -10,20 +10,11 @@ const data = JSON.parse(fs.readFileSync('db.json', 'utf8'));
 
 app.use(cors())
 
-const requestLogger = (req, res, next) => {
-    console.log('Method: ', req.method)
-    console.log('Path: ', req.path)
-    console.log('Body: ', req.body)
-    console.log('---')
-    next()
-}
-
 const unknownEndpoint = (err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send({ error: 'An error occurred while processing your request.' });
   };
 
-app.use(requestLogger)
 app.use(express.json())
 
 // serve the json data at /api/comments
