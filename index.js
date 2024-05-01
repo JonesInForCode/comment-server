@@ -100,9 +100,11 @@ app.put('/api/comments/:id', (req, res) => {
 
 app.delete('/api/comments/:id', (req, res) => {
     const id = req.params.id;
+    console.log(req.params.id);
 
     //find the comment with the given id using the recursive helper function
     const comment = findCommentById(data.comments, id);
+    console.log(comment);
 
     if (!comment) {
         return res.status(404).json({ error: 'Comment not found' });
@@ -115,9 +117,13 @@ app.delete('/api/comments/:id', (req, res) => {
 
     // remove the comment from the array
     const commentIndex = data.comments.findIndex(comment => comment.id === id);
+    console.log(commentIndex);
     data.comments.splice(commentIndex, 1);
+    console.log(data.comments);
+
 
     // save the updated data to the JSON file
+    console.log(data);
     fs.writeFileSync('db.json', JSON.stringify(data, null, 2));
     res.status(204).end();
 });
