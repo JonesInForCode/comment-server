@@ -3,6 +3,7 @@ const cors = require('cors')
 const app = express();
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+require('dotenv').config()
 
 // Read data from JSON db.json
 const data = JSON.parse(fs.readFileSync('db.json', 'utf8'));
@@ -17,9 +18,10 @@ const requestLogger = (req, res, next) => {
     next()
 }
 
-const unknownEndpoint = (req, res) => {
-    res.status(404).send({ error: 'unknown endpoint' })
-}
+const unknownEndpoint = (err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send({ error: 'An error occurred while processing your request.' });
+  };
 
 app.use(requestLogger)
 app.use(express.json())
