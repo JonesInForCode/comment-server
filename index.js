@@ -37,7 +37,9 @@ app.get('/api/comments', (req, res) => {
 app.post('/api/comments', (req, res) => {
     const newPost = req.body;
     newPost.id = uuidv4();
-    newPost.createdAt = new Date().toISOString();
+    const todaysDate = new Date().toISOString();
+    newPost.createdAt = formatDate(todaysDate);
+    
     if (newPost.parentId) {
         const parentComment = findCommentById(data.comments, newPost.parentId);
         if (!parentComment) {
@@ -69,6 +71,38 @@ function findCommentById(comments, id) {
      }
      return null;
  }
+
+ //function to format the date to the required format
+ const formatDate = (dateString) => {
+    const createdAt = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Format dates for comparison
+    const format = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const todayStr = today.toLocaleDateString('en-US', format);
+    const yesterdayStr = yesterday.toLocaleDateString('en-US', format);
+    const createdAtStr = createdAt.toLocaleDateString('en-US', format);
+
+    if (createdAtStr === todayStr) {
+        return 'Today';
+    } else if (createdAtStr === yesterdayStr) {
+        return 'Yesterday';
+    } else {
+        const differenceInTime = today.getTime() - createdAt.getTime();
+        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+        if (differenceInDays < 7) {
+            return `${differenceInDays} day${differenceInDays > 1 ? 's' : ''} ago`;
+        } else if (differenceInDays < 30) {
+            const weeks = Math.floor(differenceInDays / 7);
+            return `${weeks} week${weeks > 1?'s' : ''} ago`;
+        } else if (differenceInDays >= 30) {
+            const months = Math.floor(differenceInDays / 30);
+            return `${months} month${months > 1?'s' : ''} ago`;
+        }
+    }
+}
 
 app.get('/api/comments/:id', (req, res) => {
     const id = req.params.id;
