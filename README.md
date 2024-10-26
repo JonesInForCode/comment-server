@@ -41,7 +41,5 @@ My name is Nick Jones (JonesInForCode) - I am a Frontend Developer and Aspiring 
 Javascript, Node, & React!
 
 
-## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
