@@ -22,10 +22,8 @@ be hosted on Netlify.
 
 ## Feedback
 
-If you have any feedback, please reach out to me at feedback.curry114@passfwd.com
-
-
-## 🚀 About Me
+If you have any feedback, please reach out to me at nick.jones@jonesinforcode.dev
+# 🚀 About Me
 My name is Nick Jones (JonesInForCode) - I am a Frontend Developer and Aspiring Full Stack Developer looking to build projects that challenge and teach me.
 
 
